@@ -1,0 +1,17 @@
+# Supabase Configuration
+VITE_SUPABASE_URL=https://maeaikeumfnkcvkbbojl.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hZWFpa2V1bWZua2N2a2Jib2psIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNTMwODUsImV4cCI6MjA3NjcyOTA4NX0.9mdvd_68S_n-RhciMJ7YU-ojY5uGAeHyqiAdYGqnhas
+
+# Application Mode
+# Set to 'false' to use real Supabase, 'true' for demo mode
+VITE_DEMO_MODE=false
+
+# Optional: Google Drive Integration
+VITE_GOOGLE_CLIENT_ID=
+VITE_GOOGLE_API_KEY=
+
+# Optional: OCR Service
+VITE_OCR_API_KEY=
+
+# Optional: AI Analysis Service
+VITE_OPENAI_API_KEY=

@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Settings as SettingsComponent } from '../../../components/settings/Settings'
+import { Settings as SettingsComponent } from '../components/Settings'
 
 export function SettingsView() {
   return <div className="p-6"><SettingsComponent /></div>

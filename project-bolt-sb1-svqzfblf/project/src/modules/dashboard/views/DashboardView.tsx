@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Dashboard as DashboardComponent } from '../../../components/dashboard/Dashboard'
+import { Dashboard as DashboardComponent } from '../components/Dashboard'
 
 export function DashboardView() {
   return <DashboardComponent />

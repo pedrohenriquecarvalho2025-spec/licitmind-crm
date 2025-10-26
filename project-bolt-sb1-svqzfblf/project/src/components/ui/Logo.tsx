@@ -10,7 +10,7 @@ export function Logo({ className = 'w-8 h-8', variant = 'image' }: LogoProps) {
   if (variant === 'image') {
     return (
       <img 
-        src="/assets/logo.png" 
+        src="/assets/logo.png.png" 
         alt="LicitMind Logo" 
         className={className}
         onError={(e) => {

@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { Calendar as CalendarComponent } from '../../../components/calendar/Calendar'
+import { Calendar as CalendarComponent } from '../components/Calendar'
 
 export function CalendarView() {
   return <div className="p-6"><CalendarComponent /></div>

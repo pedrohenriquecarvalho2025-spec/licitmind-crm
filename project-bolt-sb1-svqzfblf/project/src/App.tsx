@@ -8,23 +8,46 @@ import React, { useState, Suspense, lazy } from 'react'
 import { AuthGuard } from './components/auth/AuthGuard'
 import { Sidebar } from './components/layout/Sidebar'
 import { Header } from './components/layout/Header'
-import { Dashboard } from './components/dashboard/Dashboard'
 import { Spinner } from './components/ui/atoms/Spinner'
 
-// Lazy loading de módulos
+// Lazy loading de TODOS os módulos refatorados
+const DashboardView = lazy(() =>
+  import('./modules/dashboard').then(m => ({ default: m.DashboardView }))
+)
 const ContractsDashboard = lazy(() => 
   import('./modules/contracts').then(m => ({ default: m.ContractsDashboard }))
 )
-import { EditalsTable } from './components/editals/EditalsTable'
-import { PipelineManager } from './components/pipeline/PipelineManager'
-import { UsersTable } from './components/users/UsersTable'
-import { Settings } from './components/settings/Settings'
-import { Reports } from './components/reports/Reports'
-import { Calendar } from './components/calendar/Calendar'
-import { Documents } from './components/documents/Documents'
-import { SuppliersManager } from './components/suppliers/SuppliersManager'
-import { QuotationsManager } from './components/quotations/QuotationsManager'
-import { BiddingPortalsManager } from './components/portals/BiddingPortalsManager'
+const EditalsView = lazy(() =>
+  import('./modules/editals').then(m => ({ default: m.EditalsView }))
+)
+const PipelineView = lazy(() =>
+  import('./modules/pipeline').then(m => ({ default: m.PipelineView }))
+)
+const UsersView = lazy(() =>
+  import('./modules/users').then(m => ({ default: m.UsersView }))
+)
+const SettingsView = lazy(() =>
+  import('./modules/settings').then(m => ({ default: m.SettingsView }))
+)
+const ReportsView = lazy(() =>
+  import('./modules/reports').then(m => ({ default: m.ReportsView }))
+)
+const CalendarView = lazy(() =>
+  import('./modules/calendar').then(m => ({ default: m.CalendarView }))
+)
+const DocumentsView = lazy(() =>
+  import('./modules/documents').then(m => ({ default: m.DocumentsView }))
+)
+const QuotationsView = lazy(() =>
+  import('./modules/quotations').then(m => ({ default: m.QuotationsView }))
+)
+const PortalsView = lazy(() =>
+  import('./modules/portals').then(m => ({ default: m.PortalsView }))
+)
+
+const SuppliersView = lazy(() =>
+  import('./modules/suppliers').then(m => ({ default: m.SuppliersView }))
+)
 
 type ViewId = 
   | 'dashboard'
@@ -50,57 +73,57 @@ const viewConfigs: Record<ViewId, ViewConfig> = {
   dashboard: {
     title: 'Dashboard',
     description: 'Visão geral das licitações e métricas',
-    component: <Dashboard />
+    component: <DashboardView />
   },
   pipeline: {
     title: 'Pipeline',
-    description: 'Acompanhamento visual do funil de licitações',
-    component: <PipelineManager />
+    description: 'Gestão visual do funil de licitações',
+    component: <PipelineView />
   },
   editals: {
     title: 'Editais',
-    description: 'Lista completa de editais cadastrados',
-    component: <EditalsTable />
+    description: 'Gestão de editais e licitações',
+    component: <EditalsView />
   },
   users: {
     title: 'Usuários',
     description: 'Gestão de usuários e permissões',
-    component: <div className="p-6"><UsersTable /></div>
+    component: <UsersView />
   },
   settings: {
     title: 'Configurações',
     description: 'Configurações do sistema',
-    component: <div className="p-6"><Settings /></div>
+    component: <SettingsView />
   },
   reports: {
     title: 'Relatórios',
     description: 'Análises e relatórios detalhados',
-    component: <div className="p-6"><Reports /></div>
+    component: <ReportsView />
   },
   calendar: {
     title: 'Calendário',
     description: 'Prazos e tarefas organizadas',
-    component: <div className="p-6"><Calendar /></div>
+    component: <CalendarView />
   },
   documents: {
     title: 'Documentos',
     description: 'Gestão inteligente de documentos',
-    component: <div className="p-6"><Documents /></div>
+    component: <DocumentsView />
   },
   suppliers: {
     title: 'Fornecedores',
     description: 'Gestão de fornecedores e produtos',
-    component: <div className="p-6"><SuppliersManager /></div>
+    component: <SuppliersView />
   },
   quotations: {
     title: 'Cotações',
     description: 'Solicitações e comparação de cotações',
-    component: <div className="p-6"><QuotationsManager /></div>
+    component: <QuotationsView />
   },
   portals: {
     title: 'Portais de Licitação',
     description: 'Gestão de acessos aos portais',
-    component: <div className="p-6"><BiddingPortalsManager /></div>
+    component: <PortalsView />
   },
   contracts: {
     title: 'Contratos e Empenhos',

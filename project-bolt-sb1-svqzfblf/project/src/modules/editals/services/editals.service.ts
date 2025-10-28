@@ -6,6 +6,8 @@
 import { supabase } from '../../../lib/supabase'
 import type { Edital, EditalFilters } from '../types'
 import { logger } from '../../../core/utils'
+import { storageService } from '../../../core/services/storage.service'
+import { auditService } from '../../../core/services/audit.service'
 
 export class EditalsService {
   private tableName = 'editals'
@@ -71,33 +73,108 @@ export class EditalsService {
     }
   }
 
-  async create(edital: Omit<Edital, 'id' | 'created_at' | 'updated_at'>) {
+  async create(
+    edital: Omit<Edital, 'id' | 'created_at' | 'updated_at'>,
+    file?: File | null
+  ) {
     try {
+      let arquivo_url = null
+      let arquivo_nome = null
+
+      // Upload do arquivo se fornecido
+      if (file) {
+        const uploadResult = await storageService.uploadFile(
+          file,
+          'editals',
+          'documentos',
+          edital.organization_id
+        )
+
+        if (uploadResult) {
+          arquivo_url = uploadResult.url
+          arquivo_nome = uploadResult.fileName
+        }
+      }
+
       const { data, error } = await supabase
         .from(this.tableName)
-        .insert(edital)
+        .insert({
+          ...edital,
+          arquivo_url,
+          arquivo_nome,
+        })
         .select()
         .single()
 
       if (error) throw error
-      return { data: data as Edital, error: null }
+
+      // Registrar no audit log
+      const createdEdital = data as Edital
+      await auditService.logCreate(
+        edital.created_by,
+        edital.organization_id,
+        'edital',
+        createdEdital.id,
+        createdEdital.numero_edital
+      )
+
+      return { data: createdEdital, error: null }
     } catch (error) {
       logger.error('Error creating edital:', error)
       return { data: null, error }
     }
   }
 
-  async update(id: string, updates: Partial<Edital>) {
+  async update(
+    id: string,
+    updates: Partial<Edital>,
+    file?: File | null,
+    userId?: string
+  ) {
     try {
+      let updateData = { ...updates }
+
+      // Upload do novo arquivo se fornecido
+      if (file && updates.organization_id) {
+        const uploadResult = await storageService.uploadFile(
+          file,
+          'editals',
+          'documentos',
+          updates.organization_id
+        )
+
+        if (uploadResult) {
+          updateData = {
+            ...updateData,
+            arquivo_url: uploadResult.url,
+            arquivo_nome: uploadResult.fileName,
+          }
+        }
+      }
+
       const { data, error } = await supabase
         .from(this.tableName)
-        .update(updates)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single()
 
       if (error) throw error
-      return { data: data as Edital, error: null }
+
+      // Registrar no audit log
+      const updatedEdital = data as Edital
+      if (userId && updatedEdital.organization_id) {
+        await auditService.logUpdate(
+          userId,
+          updatedEdital.organization_id,
+          'edital',
+          updatedEdital.id,
+          updatedEdital.numero_edital,
+          updates
+        )
+      }
+
+      return { data: updatedEdital, error: null }
     } catch (error) {
       logger.error('Error updating edital:', error)
       return { data: null, error }

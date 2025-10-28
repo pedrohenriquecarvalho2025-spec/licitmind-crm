@@ -1,113 +1,71 @@
-import React, { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../hooks/useAuth'
-import { ModalBase as Modal } from '../ui/molecules/ModalBase'
-import { Button } from '../ui/atoms/Button'
-import { Input } from '../ui/atoms/Input'
-import { Select } from '../ui/molecules/Select'
-import { Calendar, Clock, AlertCircle } from 'lucide-react'
-import type { Database } from '../../lib/database.types'
+/**
+ * Formulário de Tarefa com CRUD completo
+ */
 
-type CalendarTask = Database['public']['Tables']['calendar_tasks']['Row']
-type CalendarTaskInsert = Database['public']['Tables']['calendar_tasks']['Insert']
+import React, { useState, useEffect } from 'react'
+import { X, AlertCircle, Trash2 } from 'lucide-react'
+import { Button } from '../../../components/ui/atoms/Button'
+import { Input } from '../../../components/ui/atoms/Input'
+import { Select } from '../../../components/ui/atoms/Select'
+import { useAuth, useOrganization } from '../../../hooks'
+import { calendarAPI } from '../calendar.api'
+import { editalsAPI } from '../../editals/editals.api'
+import { usersAPI } from '../../users/users.api'
+import type { CalendarTask } from '../types'
 
 interface TaskFormProps {
-  isOpen: boolean
-  onClose: () => void
   task?: CalendarTask | null
+  onClose: () => void
   onSuccess: () => void
   defaultDate?: string
 }
 
-export function TaskForm({ isOpen, onClose, task, onSuccess, defaultDate }: TaskFormProps) {
-  const { profile } = useAuth()
+export function TaskForm({ task, onClose, onSuccess, defaultDate }: TaskFormProps) {
+  const { user } = useAuth()
+  const { organizationId } = useOrganization()
   const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [editals, setEditals] = useState<Array<{ id: string; numero_edital: string }>>([])
   const [users, setUsers] = useState<Array<{ id: string; full_name: string }>>([])
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    task_date: defaultDate || new Date().toISOString().split('T')[0],
-    task_time: '',
-    type: 'task' as 'task' | 'meeting' | 'deadline',
-    priority: 'medium' as 'high' | 'medium' | 'low',
-    edital_id: '',
-    assigned_to: ''
+    title: task?.title || '',
+    description: task?.description || '',
+    task_date: task?.task_date || defaultDate || new Date().toISOString().split('T')[0],
+    task_time: task?.task_time || '',
+    type: task?.type || ('task' as const),
+    priority: task?.priority || ('medium' as const),
+    edital_id: task?.edital_id || '',
+    assigned_to: task?.assigned_to || '',
   })
 
   useEffect(() => {
-    if (isOpen) {
-      loadEditals()
-      loadUsers()
+    loadData()
+  }, [])
 
-      if (task) {
-        setFormData({
-          title: task.title,
-          description: task.description || '',
-          task_date: task.task_date,
-          task_time: task.task_time || '',
-          type: task.type,
-          priority: task.priority,
-          edital_id: task.edital_id || '',
-          assigned_to: task.assigned_to || ''
-        })
-      } else {
-        setFormData({
-          title: '',
-          description: '',
-          task_date: defaultDate || new Date().toISOString().split('T')[0],
-          task_time: '',
-          type: 'task',
-          priority: 'medium',
-          edital_id: '',
-          assigned_to: ''
-        })
-      }
-    }
-  }, [isOpen, task, defaultDate])
-
-  const loadEditals = async () => {
-    if (!profile?.organization_id) return
+  const loadData = async () => {
+    if (!organizationId) return
 
     try {
-      const { data, error } = await supabase
-        .from('editals')
-        .select('id, numero_edital')
-        .eq('organization_id', profile.organization_id)
-        .order('created_at', { ascending: false })
-        .limit(50)
+      const [editalsData, usersData] = await Promise.all([
+        editalsAPI.listEditals(organizationId),
+        usersAPI.listUsers(organizationId),
+      ])
 
-      if (error) throw error
-      setEditals(data || [])
+      setEditals(
+        editalsData.map((e) => ({ id: e.id, numero_edital: e.numero_edital }))
+      )
+      setUsers(usersData.map((u) => ({ id: u.id, full_name: u.full_name })))
     } catch (error) {
-      console.error('Error loading editals:', error)
-    }
-  }
-
-  const loadUsers = async () => {
-    if (!profile?.organization_id) return
-
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('id, full_name')
-        .eq('organization_id', profile.organization_id)
-        .eq('is_active', true)
-        .order('full_name')
-
-      if (error) throw error
-      setUsers(data || [])
-    } catch (error) {
-      console.error('Error loading users:', error)
+      console.error('Error loading data:', error)
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!profile?.organization_id || !profile.id) {
+    if (!organizationId || !user) {
       setError('Usuário não autenticado')
       return
     }
@@ -121,8 +79,7 @@ export function TaskForm({ isOpen, onClose, task, onSuccess, defaultDate }: Task
       setLoading(true)
       setError('')
 
-      const taskData: CalendarTaskInsert = {
-        organization_id: profile.organization_id,
+      const taskData = {
         title: formData.title.trim(),
         description: formData.description.trim() || null,
         task_date: formData.task_date,
@@ -131,22 +88,14 @@ export function TaskForm({ isOpen, onClose, task, onSuccess, defaultDate }: Task
         priority: formData.priority,
         edital_id: formData.edital_id || null,
         assigned_to: formData.assigned_to || null,
-        created_by: profile.id
+        organization_id: organizationId,
+        created_by: user.id,
       }
 
       if (task) {
-        const { error } = await supabase
-          .from('calendar_tasks')
-          .update(taskData)
-          .eq('id', task.id)
-
-        if (error) throw error
+        await calendarAPI.updateTask(task.id, taskData, user.id)
       } else {
-        const { error } = await supabase
-          .from('calendar_tasks')
-          .insert(taskData)
-
-        if (error) throw error
+        await calendarAPI.createTask(taskData as any)
       }
 
       onSuccess()
@@ -159,116 +108,159 @@ export function TaskForm({ isOpen, onClose, task, onSuccess, defaultDate }: Task
     }
   }
 
+  const handleDelete = async () => {
+    if (!task || !user) return
+
+    if (!confirm(`Tem certeza que deseja excluir a tarefa "${task.title}"?`)) return
+
+    try {
+      setDeleting(true)
+      await calendarAPI.deleteTask(task.id, user.id)
+      onSuccess()
+      onClose()
+    } catch (err: any) {
+      console.error('Error deleting task:', err)
+      setError(err.message || 'Erro ao excluir tarefa')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={task ? 'Editar Tarefa' : 'Nova Tarefa'}
-      size="lg"
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center space-x-2 text-red-800">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <span className="text-sm">{error}</span>
-          </div>
-        )}
-
-        <Input
-          label="Título"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          placeholder="Ex: Reunião com equipe"
-          required
-        />
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Descrição
-          </label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="Descrição detalhada da tarefa..."
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-          />
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-white">
+            {task ? 'Editar Tarefa' : 'Nova Tarefa'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {error && (
+            <div className="flex items-start space-x-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          )}
+
           <Input
-            label="Data"
-            type="date"
-            value={formData.task_date}
-            onChange={(e) => setFormData({ ...formData, task_date: e.target.value })}
+            label="Título"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            placeholder="Ex: Reunião com equipe"
             required
           />
 
-          <Input
-            label="Horário (opcional)"
-            type="time"
-            value={formData.task_time}
-            onChange={(e) => setFormData({ ...formData, task_time: e.target.value })}
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+              Descrição
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Descrição detalhada da tarefa..."
+              rows={3}
+              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-neutral-900 dark:text-white resize-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Data"
+              type="date"
+              value={formData.task_date}
+              onChange={(e) => setFormData({ ...formData, task_date: e.target.value })}
+              required
+            />
+
+            <Input
+              label="Horário (opcional)"
+              type="time"
+              value={formData.task_time}
+              onChange={(e) => setFormData({ ...formData, task_time: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Select
+              label="Tipo"
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+              options={[
+                { value: 'task', label: 'Tarefa' },
+                { value: 'meeting', label: 'Reunião' },
+                { value: 'deadline', label: 'Prazo' },
+              ]}
+            />
+
+            <Select
+              label="Prioridade"
+              value={formData.priority}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
+              options={[
+                { value: 'low', label: 'Baixa' },
+                { value: 'medium', label: 'Média' },
+                { value: 'high', label: 'Alta' },
+              ]}
+            />
+          </div>
+
+          <Select
+            label="Edital Relacionado (opcional)"
+            value={formData.edital_id}
+            onChange={(e) => setFormData({ ...formData, edital_id: e.target.value })}
+            options={[
+              { value: '', label: 'Nenhum' },
+              ...editals.map((e) => ({ value: e.id, label: e.numero_edital })),
+            ]}
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Select
-            label="Tipo"
-            value={formData.type}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-          >
-            <option value="task">Tarefa</option>
-            <option value="meeting">Reunião</option>
-            <option value="deadline">Prazo</option>
-          </Select>
 
           <Select
-            label="Prioridade"
-            value={formData.priority}
-            onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-          >
-            <option value="low">Baixa</option>
-            <option value="medium">Média</option>
-            <option value="high">Alta</option>
-          </Select>
-        </div>
+            label="Atribuir Para (opcional)"
+            value={formData.assigned_to}
+            onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
+            options={[
+              { value: '', label: 'Nenhum' },
+              ...users.map((u) => ({ value: u.id, label: u.full_name })),
+            ]}
+          />
 
-        <Select
-          label="Edital Relacionado (opcional)"
-          value={formData.edital_id}
-          onChange={(e) => setFormData({ ...formData, edital_id: e.target.value })}
-        >
-          <option value="">Nenhum</option>
-          {editals.map(edital => (
-            <option key={edital.id} value={edital.id}>
-              {edital.numero_edital}
-            </option>
-          ))}
-        </Select>
+          {/* Actions */}
+          <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-700">
+            {task ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {deleting ? 'Excluindo...' : 'Excluir'}
+              </Button>
+            ) : (
+              <div />
+            )}
 
-        <Select
-          label="Atribuir Para (opcional)"
-          value={formData.assigned_to}
-          onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-        >
-          <option value="">Nenhum</option>
-          {users.map(user => (
-            <option key={user.id} value={user.id}>
-              {user.full_name}
-            </option>
-          ))}
-        </Select>
-
-        <div className="flex justify-end space-x-3 pt-4 border-t">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : task ? 'Atualizar' : 'Criar Tarefa'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+            <div className="flex items-center space-x-3">
+              <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+                Cancelar
+              </Button>
+              <Button type="submit" loading={loading}>
+                {task ? 'Salvar' : 'Criar Tarefa'}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   )
 }

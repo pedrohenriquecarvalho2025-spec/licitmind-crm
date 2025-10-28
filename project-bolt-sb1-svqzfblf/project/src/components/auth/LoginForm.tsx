@@ -1,9 +1,95 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { Button } from '../ui/atoms/Button'
 import { Input } from '../ui/atoms/Input'
 import { AlertCircle, Brain, Zap, Sparkles, Shield, TrendingUp } from 'lucide-react'
 import { Logo } from '../ui/Logo'
+
+// Componente de Logo 3D com movimento interativo
+function Logo3D() {
+  const logoRef = useRef<HTMLDivElement>(null)
+  const [transform, setTransform] = useState({ rotateX: 0, rotateY: 0 })
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!logoRef.current) return
+
+      const rect = logoRef.current.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
+
+      const deltaX = e.clientX - centerX
+      const deltaY = e.clientY - centerY
+
+      // Limitar a rotação a valores razoáveis
+      const rotateY = (deltaX / window.innerWidth) * 30 // -15 a 15 graus
+      const rotateX = -(deltaY / window.innerHeight) * 30 // -15 a 15 graus
+
+      setTransform({ rotateX, rotateY })
+    }
+
+    const handleMouseLeave = () => {
+      setTransform({ rotateX: 0, rotateY: 0 })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    logoRef.current?.addEventListener('mouseleave', handleMouseLeave)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      logoRef.current?.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [])
+
+  return (
+    <div
+      ref={logoRef}
+      className="relative group"
+      style={{ perspective: '1000px' }}
+    >
+      {/* Logo Image with 3D Transform */}
+      <div
+        className="relative w-32 h-32 flex items-center justify-center transition-transform duration-300 ease-out"
+        style={{
+          transform: `rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg) scale(1.1)`,
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'translateZ(20px)',
+          }}
+        >
+          <Logo className="w-full h-full text-brand-cyan drop-shadow-[0_0_30px_rgba(57,162,219,1)]" />
+        </div>
+      </div>
+
+      {/* Multi-layer Glow Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-cyan via-primary-500 to-brand-cyan rounded-full blur-[80px] opacity-60 group-hover:opacity-90 transition-opacity animate-glow-pulse" />
+      <div className="absolute inset-0 bg-brand-cyan rounded-full blur-[60px] opacity-50 animate-pulse" />
+      <div className="absolute inset-0 bg-primary-500 rounded-full blur-[40px] opacity-40" />
+
+      {/* AI Badge with 3D effect */}
+      <div
+        className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-brand-tech-green to-emerald-500 rounded-full flex items-center justify-center shadow-2xl shadow-brand-tech-green/70 animate-pulse border-4 border-neutral-900 transition-transform duration-300"
+        style={{
+          transform: `translateZ(40px) rotateY(${-transform.rotateY * 0.5}deg)`,
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        <Zap className="w-5 h-5 text-white" />
+      </div>
+
+      {/* Decorative Rings */}
+      <div className="absolute inset-0 rounded-full border-2 border-brand-cyan/20 scale-125 animate-ping opacity-20" />
+      <div
+        className="absolute inset-0 rounded-full border border-primary-500/30 scale-150 animate-ping opacity-10"
+        style={{ animationDelay: '1s' }}
+      />
+    </div>
+  )
+}
 
 export function LoginForm() {
   const [isLogin, setIsLogin] = useState(true)
@@ -80,29 +166,10 @@ export function LoginForm() {
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
       
       <div className="max-w-md w-full relative">
-        {/* Logo Card */}
+        {/* Logo Card with 3D Effect */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-6">
-            <div className="relative group">
-              {/* Logo Image with Enhanced Glow */}
-              <div className="relative w-32 h-32 flex items-center justify-center transform hover:scale-125 hover:rotate-12 transition-all duration-700">
-                <Logo className="w-full h-full text-brand-cyan drop-shadow-[0_0_20px_rgba(57,162,219,1)]" />
-              </div>
-              {/* Multi-layer Glow Effects */}
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-cyan via-primary-500 to-brand-cyan rounded-full blur-[80px] opacity-60 group-hover:opacity-90 transition-opacity animate-glow-pulse" />
-              <div className="absolute inset-0 bg-brand-cyan rounded-full blur-[60px] opacity-50 animate-pulse" />
-              <div className="absolute inset-0 bg-primary-500 rounded-full blur-[40px] opacity-40" />
-
-              {/* AI Badge */}
-              <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-brand-tech-green to-emerald-500 rounded-full flex items-center justify-center shadow-2xl shadow-brand-tech-green/70 animate-pulse border-4 border-neutral-900">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-
-              {/* Decorative Rings */}
-              <div className="absolute inset-0 rounded-full border-2 border-brand-cyan/20 scale-125 animate-ping opacity-20" />
-              <div className="absolute inset-0 rounded-full border border-primary-500/30 scale-150 animate-ping opacity-10" style={{ animationDelay: '1s' }} />
-            </div>
-          </div>
+          <div className="inline-flex items-center justify-center mb-6 perspective-1000">
+            <Logo3D />
           <h1 className="text-5xl font-bold mb-3 tracking-tight bg-gradient-to-r from-white via-brand-cyan to-white bg-clip-text text-transparent">LicitMind</h1>
           <p className="text-brand-cyan font-semibold mb-2 flex items-center justify-center space-x-2">
             <Brain className="w-4 h-4" />

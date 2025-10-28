@@ -9,6 +9,9 @@ import { AuthGuard } from './components/auth/AuthGuard'
 import { Sidebar } from './components/layout/Sidebar'
 import { Header } from './components/layout/Header'
 import { Spinner } from './components/ui/atoms/Spinner'
+import { useAuth } from './hooks/useAuth'
+import { hasViewPermission, type ViewId as PermissionViewId } from './core/config/permissions'
+import { AlertCircle } from 'lucide-react'
 
 // Lazy loading de TODOS os módulos refatorados
 const DashboardView = lazy(() =>
@@ -135,14 +138,43 @@ const viewConfigs: Record<ViewId, ViewConfig> = {
 function App() {
   const [currentView, setCurrentView] = useState<ViewId>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const { profile } = useAuth()
 
   const { title, description, component } = viewConfigs[currentView]
+
+  // Verifica se o usuário tem permissão para acessar a view atual
+  const hasPermission =
+    profile && hasViewPermission(profile.role, currentView as PermissionViewId)
+
+  // Componente de acesso negado
+  const AccessDenied = () => (
+    <div className="flex items-center justify-center min-h-screen p-6">
+      <div className="max-w-md w-full bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-8 text-center">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+          Acesso Negado
+        </h2>
+        <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+          Você não possui permissão para acessar este módulo. Entre em contato com o
+          administrador do sistema.
+        </p>
+        <button
+          onClick={() => setCurrentView('dashboard')}
+          className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
+        >
+          Voltar ao Dashboard
+        </button>
+      </div>
+    </div>
+  )
 
   return (
     <AuthGuard>
       <div className="h-screen flex bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-900 dark:to-neutral-800">
-        <Sidebar 
-          currentView={currentView} 
+        <Sidebar
+          currentView={currentView}
           onViewChange={setCurrentView as any}
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -150,12 +182,14 @@ function App() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header title={title} description={description} />
           <main className="flex-1 overflow-y-auto bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
-            <Suspense fallback={
-              <div className="flex items-center justify-center min-h-screen">
-                <Spinner size="lg" />
-              </div>
-            }>
-              {component}
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center min-h-screen">
+                  <Spinner size="lg" />
+                </div>
+              }
+            >
+              {hasPermission ? component : <AccessDenied />}
             </Suspense>
           </main>
         </div>

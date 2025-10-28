@@ -11,17 +11,23 @@ import { Button } from '../../../components/ui/atoms/Button'
 import { SearchInput } from '../../../components/ui/molecules/SearchInput'
 import { EmptyState } from '../../../components/shared/organisms/EmptyState'
 import { Spinner } from '../../../components/ui/atoms/Spinner'
+import { ModalBase as Modal } from '../../../components/ui/molecules/ModalBase'
 import { SupplierStatsGrid } from '../components/SupplierStatsGrid'
 import { SupplierCard } from '../components/SupplierCard'
+import { SupplierForm, type SupplierFormData } from '../components/SupplierForm'
 import { useOrganization } from '../../../hooks'
+import { useAuth } from '../../../hooks/useAuth'
 import { suppliersAPI } from '../suppliers.api'
 import type { Supplier } from '../types'
 
 export function SuppliersView() {
   const { organizationId } = useOrganization()
+  const { profile } = useAuth()
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
 
   useEffect(() => {
     loadData()
@@ -58,12 +64,40 @@ export function SuppliersView() {
   }, [suppliers])
 
   const handleCreateSupplier = useCallback(() => {
-    // TODO: Abrir modal de criação
+    setSelectedSupplier(null)
+    setShowForm(true)
   }, [])
 
   const handleSupplierClick = useCallback((supplier: Supplier) => {
-    // TODO: Abrir modal de detalhes/edição
+    setSelectedSupplier(supplier)
+    setShowForm(true)
   }, [])
+
+  const handleCloseForm = useCallback(() => {
+    setShowForm(false)
+    setSelectedSupplier(null)
+  }, [])
+
+  const handleSubmitForm = async (data: SupplierFormData) => {
+    if (!organizationId || !profile) return
+
+    try {
+      if (selectedSupplier) {
+        // Atualizar fornecedor existente
+        await suppliersAPI.updateSupplier(selectedSupplier.id, data, profile.id)
+      } else {
+        // Criar novo fornecedor
+        await suppliersAPI.createSupplier(data, organizationId, profile.id)
+      }
+
+      // Recarrega dados
+      await loadData()
+      handleCloseForm()
+    } catch (error) {
+      console.error('Error submitting supplier:', error)
+      throw error
+    }
+  }
 
   if (loading) {
     return (
@@ -129,6 +163,20 @@ export function SuppliersView() {
           </div>
         )}
       </div>
+
+      {/* Modal de Formulário */}
+      <Modal
+        isOpen={showForm}
+        onClose={handleCloseForm}
+        title={selectedSupplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}
+        size="xl"
+      >
+        <SupplierForm
+          supplier={selectedSupplier}
+          onSubmit={handleSubmitForm}
+          onCancel={handleCloseForm}
+        />
+      </Modal>
     </div>
   )
 }

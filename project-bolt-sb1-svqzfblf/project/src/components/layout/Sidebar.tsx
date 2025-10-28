@@ -20,6 +20,7 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../contexts/ThemeContext'
 import { Logo } from '../ui/Logo'
+import { hasViewPermission, type ViewId } from '../../core/config/permissions'
 
 interface SidebarProps {
   currentView: string
@@ -29,25 +30,26 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentView, onViewChange, isCollapsed = false, onToggleCollapse }: SidebarProps) {
-  const { signOut, hasPermission } = useAuth()
+  const { signOut, profile } = useAuth()
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3, roles: ['admin', 'gestor'] },
-    { id: 'pipeline', label: 'Pipeline', icon: Kanban, roles: ['admin', 'gestor', 'analista'] },
-    { id: 'editals', label: 'Editais', icon: FileText, roles: ['admin', 'gestor', 'analista', 'cliente'] },
-    { id: 'suppliers', label: 'Fornecedores', icon: Building2, roles: ['admin', 'gestor', 'analista'] },
-    { id: 'quotations', label: 'Cotações', icon: ShoppingCart, roles: ['admin', 'gestor', 'analista'] },
-    { id: 'contracts', label: 'Contratos', icon: FileSignature, roles: ['admin', 'gestor'] },
-    { id: 'portals', label: 'Portais', icon: Globe, roles: ['admin', 'gestor', 'analista'] },
-    { id: 'calendar', label: 'Calendário', icon: Calendar, roles: ['admin', 'gestor', 'analista'] },
-    { id: 'documents', label: 'Documentos', icon: FolderOpen, roles: ['admin', 'gestor', 'analista'] },
-    { id: 'reports', label: 'Relatórios', icon: TrendingUp, roles: ['admin', 'gestor'] },
-    { id: 'users', label: 'Usuários', icon: Users, roles: ['admin', 'gestor'] },
-    { id: 'settings', label: 'Configurações', icon: Settings, roles: ['admin'] },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'pipeline', label: 'Pipeline', icon: Kanban },
+    { id: 'editals', label: 'Editais', icon: FileText },
+    { id: 'suppliers', label: 'Fornecedores', icon: Building2 },
+    { id: 'quotations', label: 'Cotações', icon: ShoppingCart },
+    { id: 'contracts', label: 'Contratos', icon: FileSignature },
+    { id: 'portals', label: 'Portais', icon: Globe },
+    { id: 'calendar', label: 'Calendário', icon: Calendar },
+    { id: 'documents', label: 'Documentos', icon: FolderOpen },
+    { id: 'reports', label: 'Relatórios', icon: TrendingUp },
+    { id: 'users', label: 'Usuários', icon: Users },
+    { id: 'settings', label: 'Configurações', icon: Settings },
   ]
 
+  // Filtra itens baseado nas permissões do usuário
   const visibleItems = menuItems.filter(item =>
-    item.roles.some(role => hasPermission(role))
+    profile ? hasViewPermission(profile.role, item.id as ViewId) : false
   )
 
   const handleSignOut = async () => {

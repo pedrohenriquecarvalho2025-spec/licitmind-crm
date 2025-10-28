@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../../hooks/useAuth'
 import { RemindersCenter } from './RemindersCenter'
 import { QuickLinks } from './QuickLinks'
 import { RecentActivity } from './RecentActivity'
+import { ExpirationAlerts } from './ExpirationAlerts'
+import { BiddingSchedule } from './BiddingSchedule'
 
 export function Dashboard() {
   const { profile } = useAuth()
@@ -46,6 +48,9 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column */}
         <div className="space-y-6">
+          {/* Alertas de Vencimento */}
+          <ExpirationAlerts />
+          
           {/* Central de Lembretes */}
           <RemindersCenter />
           
@@ -55,6 +60,9 @@ export function Dashboard() {
 
         {/* Right Column */}
         <div className="space-y-6">
+          {/* Agenda de Disputas */}
+          <BiddingSchedule />
+          
           {/* Botões de Acesso Rápido */}
           <QuickLinks />
         </div>

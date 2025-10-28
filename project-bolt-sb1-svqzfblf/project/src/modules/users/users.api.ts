@@ -5,11 +5,20 @@
 import { usersService } from './services/users.service'
 import type { UserProfile, UserFilters } from './types'
 
+export interface UserInviteData {
+  email: string
+  full_name: string
+  role: UserProfile['role']
+  organization_id: string
+}
+
 export interface UsersAPI {
   listUsers: (organizationId: string, filters?: UserFilters) => Promise<UserProfile[]>
   getUser: (id: string) => Promise<UserProfile | null>
+  createUser: (data: UserInviteData) => Promise<UserProfile | null>
   updateUser: (id: string, updates: Partial<UserProfile>) => Promise<UserProfile | null>
   deleteUser: (id: string) => Promise<boolean>
+  inviteUser: (data: UserInviteData) => Promise<{ success: boolean; message: string }>
 }
 
 class UsersAPIImpl implements UsersAPI {
@@ -23,6 +32,11 @@ class UsersAPIImpl implements UsersAPI {
     return data
   }
 
+  async createUser(data: UserInviteData) {
+    const { data: user } = await usersService.create(data)
+    return user
+  }
+
   async updateUser(id: string, updates: Partial<UserProfile>) {
     const { data } = await usersService.update(id, updates)
     return data
@@ -31,6 +45,11 @@ class UsersAPIImpl implements UsersAPI {
   async deleteUser(id: string) {
     const { data } = await usersService.delete(id)
     return data || false
+  }
+
+  async inviteUser(data: UserInviteData) {
+    const { success, message } = await usersService.invite(data)
+    return { success, message }
   }
 }
 

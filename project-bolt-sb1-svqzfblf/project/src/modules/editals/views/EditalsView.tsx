@@ -13,12 +13,15 @@ import { EmptyState } from '../../../components/shared/organisms/EmptyState'
 import { Spinner } from '../../../components/ui/atoms/Spinner'
 import { EditalStatsGrid } from '../components/EditalStatsGrid'
 import { EditalCard } from '../components/EditalCard'
-import { useOrganization } from '../../../hooks'
+import { EditalForm, type EditalFormData } from '../components/EditalForm'
+import { EditalDetailsModal } from '../components/EditalDetailsModal'
+import { useOrganization, useAuth } from '../../../hooks'
 import { editalsAPI } from '../editals.api'
 import type { Edital, EditalStats } from '../types'
 
 export function EditalsView() {
   const { organizationId } = useOrganization()
+  const { user } = useAuth()
   const [editals, setEditals] = useState<Edital[]>([])
   const [stats, setStats] = useState<EditalStats>({
     totalValue: 0,
@@ -28,6 +31,9 @@ export function EditalsView() {
   })
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
+  const [selectedEdital, setSelectedEdital] = useState<Edital | null>(null)
 
   useEffect(() => {
     loadData()
@@ -60,12 +66,83 @@ export function EditalsView() {
   )
 
   const handleCreateEdital = useCallback(() => {
-    // TODO: Abrir modal de criação
+    setSelectedEdital(null)
+    setShowForm(true)
   }, [])
 
   const handleEditalClick = useCallback((edital: Edital) => {
-    // TODO: Abrir modal de detalhes/edição
+    setSelectedEdital(edital)
+    setShowDetails(true)
   }, [])
+
+  const handleCloseForm = useCallback(() => {
+    setShowForm(false)
+    setSelectedEdital(null)
+  }, [])
+
+  const handleCloseDetails = useCallback(() => {
+    setShowDetails(false)
+    setSelectedEdital(null)
+  }, [])
+
+  const handleEditFromDetails = useCallback(() => {
+    setShowDetails(false)
+    setShowForm(true)
+  }, [])
+
+  const handleSubmitForm = async (data: EditalFormData) => {
+    if (!organizationId || !user) return
+
+    try {
+      if (selectedEdital) {
+        // Atualizar edital existente
+        await editalsAPI.updateEdital(
+          selectedEdital.id,
+          {
+            numero_edital: data.numero_edital,
+            orgao_entidade: data.orgao_entidade,
+            objeto: data.objeto,
+            modalidade: data.modalidade as any,
+            data_publicacao: data.data_publicacao,
+            data_entrega_propostas: data.data_entrega_propostas,
+            valor_estimado: data.valor_estimado,
+            status: data.status as any,
+            responsavel_id: data.responsavel_id,
+            observacoes: data.observacoes,
+            organization_id: organizationId,
+          },
+          data.arquivo,
+          user.id
+        )
+      } else {
+        // Criar novo edital
+        await editalsAPI.createEdital(
+          {
+            numero_edital: data.numero_edital,
+            orgao_entidade: data.orgao_entidade,
+            objeto: data.objeto,
+            modalidade: data.modalidade as any,
+            data_publicacao: data.data_publicacao,
+            data_entrega_propostas: data.data_entrega_propostas,
+            valor_estimado: data.valor_estimado,
+            status: data.status as any,
+            responsavel_id: data.responsavel_id,
+            observacoes: data.observacoes,
+            organization_id: organizationId,
+            created_by: user.id,
+          },
+          data.arquivo
+        )
+      }
+
+      // Recarregar dados
+      await loadData()
+      handleCloseForm()
+    } catch (error) {
+      console.error('Error saving edital:', error)
+      throw error
+    }
+  }
 
   if (loading) {
     return (
@@ -126,6 +203,25 @@ export function EditalsView() {
           </div>
         )}
       </div>
+
+      {/* Form Modal */}
+      {showForm && (
+        <EditalForm
+          edital={selectedEdital}
+          onSubmit={handleSubmitForm}
+          onCancel={handleCloseForm}
+        />
+      )}
+
+      {/* Details Modal */}
+      {showDetails && selectedEdital && (
+        <EditalDetailsModal
+          edital={selectedEdital}
+          onClose={handleCloseDetails}
+          onEdit={handleEditFromDetails}
+          onUpdate={loadData}
+        />
+      )}
     </div>
   )
 }

@@ -59,13 +59,21 @@ class EditalsAPIImpl implements EditalsAPI {
     }
   }
 
-  async createEdital(edital: Omit<Edital, 'id' | 'created_at' | 'updated_at'>) {
-    const { data } = await editalsService.create(edital)
+  async createEdital(
+    edital: Omit<Edital, 'id' | 'created_at' | 'updated_at'>,
+    file?: File | null
+  ) {
+    const { data } = await editalsService.create(edital, file)
     return data
   }
 
-  async updateEdital(id: string, updates: Partial<Edital>) {
-    const { data } = await editalsService.update(id, updates)
+  async updateEdital(
+    id: string,
+    updates: Partial<Edital>,
+    file?: File | null,
+    userId?: string
+  ) {
+    const { data } = await editalsService.update(id, updates, file, userId)
     return data
   }
 

@@ -50,3 +50,5 @@ export interface ContractStats {
   totalCount: number
 }
 
+export * from './penalties'
+

@@ -11,4 +11,5 @@ export { Label } from './Label'
 export { Title } from './Title'
 export { Text } from './Text'
 export { Spinner } from './Spinner'
+export { StatusBadge } from './StatusBadge'
 

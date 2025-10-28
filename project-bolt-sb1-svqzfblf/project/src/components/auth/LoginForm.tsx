@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { Button } from '../ui/atoms/Button'
 import { Input } from '../ui/atoms/Input'
-import { AlertCircle, Brain, Zap, Sparkles, Shield, TrendingUp } from 'lucide-react'
+import { AlertCircle, Sparkles, Shield, TrendingUp, Clock } from 'lucide-react'
 import { Logo } from '../ui/Logo'
 
 // Componente de Logo 3D com movimento interativo
@@ -70,15 +70,15 @@ function Logo3D() {
       <div className="absolute inset-0 bg-brand-cyan rounded-full blur-[60px] opacity-50 animate-pulse" />
       <div className="absolute inset-0 bg-primary-500 rounded-full blur-[40px] opacity-40" />
 
-      {/* AI Badge with 3D effect */}
+      {/* Status Badge with 3D effect */}
       <div
-        className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-brand-tech-green to-emerald-500 rounded-full flex items-center justify-center shadow-2xl shadow-brand-tech-green/70 animate-pulse border-4 border-neutral-900 transition-transform duration-300"
+        className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-2xl shadow-primary-500/70 animate-pulse border-4 border-neutral-900 transition-transform duration-300"
         style={{
           transform: `translateZ(40px) rotateY(${-transform.rotateY * 0.5}deg)`,
           transformStyle: 'preserve-3d',
         }}
       >
-        <Zap className="w-5 h-5 text-white" />
+        <Clock className="w-5 h-5 text-white" />
       </div>
 
       {/* Decorative Rings */}
@@ -172,20 +172,20 @@ export function LoginForm() {
             <Logo3D />
           <h1 className="text-5xl font-bold mb-3 tracking-tight bg-gradient-to-r from-white via-brand-cyan to-white bg-clip-text text-transparent">LicitMind</h1>
           <p className="text-brand-cyan font-semibold mb-2 flex items-center justify-center space-x-2">
-            <Brain className="w-4 h-4" />
-            <span>IA para Licitações</span>
+            <Clock className="w-4 h-4" />
+            <span>Gestão de Licitações</span>
           </p>
           <p className="text-neutral-400 text-sm mb-6">
-            Gestão Inteligente e Automatizada
+            Controle Completo de Prazos e Processos
           </p>
           
           {/* Features */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="text-center">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
-                <Brain className="w-6 h-6 text-brand-cyan" />
+                <Clock className="w-6 h-6 text-brand-cyan" />
               </div>
-              <p className="text-xs text-brand-silver font-medium">IA Integrada</p>
+              <p className="text-xs text-brand-silver font-medium">Controle de Prazos</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
@@ -293,8 +293,8 @@ export function LoginForm() {
         {/* Footer */}
         <div className="text-center mt-8 text-neutral-500 text-sm">
           <p className="flex items-center justify-center space-x-2">
-            <Brain className="w-4 h-4 text-brand-cyan" />
-            <span>© 2024 LicitMind - IA para Licitações</span>
+            <Shield className="w-4 h-4 text-brand-cyan" />
+            <span>© 2024 LicitMind - Gestão de Licitações</span>
           </p>
         </div>
       </div>

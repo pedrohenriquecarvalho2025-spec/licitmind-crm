@@ -170,6 +170,7 @@ export function LoginForm() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-6 perspective-1000">
             <Logo3D />
+          </div>
           <h1 className="text-5xl font-bold mb-3 tracking-tight bg-gradient-to-r from-white via-brand-cyan to-white bg-clip-text text-transparent">LicitMind</h1>
           <p className="text-brand-cyan font-semibold mb-2 flex items-center justify-center space-x-2">
             <Clock className="w-4 h-4" />

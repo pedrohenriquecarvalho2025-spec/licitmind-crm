@@ -1,255 +1,269 @@
-# 🧠 LicitMind - CRM Vertical para Gestão de Licitações
+# 🚀 LicitMind - Sistema de Gestão de Licitações
 
-**LicitMind** é um SaaS CRM de alta performance focado exclusivamente na gestão, controle e organização do fluxo de licitações públicas e privadas no mercado brasileiro.
+> Plataforma SaaS B2B completa para gestão inteligente de licitações públicas
 
-![Logo](https://via.placeholder.com/150x150/1E90FF/FFFFFF?text=LicitMind)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 
 ---
 
-## 🚀 Funcionalidades Implementadas
+## 📋 Sobre o Projeto
 
-### ✅ **Módulos Core**
+LicitMind é uma plataforma completa de gestão de licitações que oferece controle total do processo licitatório, desde a prospecção até a gestão de contratos, com foco em produtividade e organização.
 
-#### 1. **Dashboard Inteligente**
-- KPIs em tempo real (total de editais, taxa de conversão, valor total)
-- Gráficos de performance mensal
-- Insights de IA (simulados)
-- Top 5 órgãos por número de editais
-- Ações rápidas
+### 🎯 Principais Funcionalidades
 
-#### 2. **Gestão de Editais**
-- CRUD completo de editais
-- Campos: número, órgão, objeto, modalidade, datas, valor, status
-- Upload de arquivos
-- Sistema de comentários
-- Integração com Google Drive (estrutura)
+#### ✅ Gestão de Editais
+- Formulário completo com tabela de itens
+- Upload e gerenciamento de documentos
+- Integração com Google Drive
+- Busca automática de CNPJ (ReceitaWS)
+- Histórico de alterações
+- Anotações colaborativas
+- Pipeline visual (Kanban)
 
-#### 3. **Pipeline Kanban**
-- Visualização Kanban completa
-- Múltiplos pipelines customizáveis
-- Estágios personalizados com cores
-- Cards de editais com informações principais
+#### ✅ Dashboard Inteligente
+- Alertas de vencimento (documentos e credenciais)
+- Agenda de disputas
+- Central de lembretes
+- Atividades recentes
+- Métricas em tempo real
 
-#### 4. **Gestão de Fornecedores** 🆕
-- Cadastro completo de fornecedores
-- Busca por CNPJ, razão social ou nome fantasia
-- Controle de status (ativo/inativo)
-- Informações de contato e localização
-
-#### 5. **Gestão de Cotações** 🆕
-- Solicitações de cotação
-- Controle de status (pendente, em andamento, recebida, aprovada, rejeitada)
-- Vinculação com editais
-- Histórico completo
-
-#### 6. **Portal de Gestão de Portais de Licitação** 🆕
-- Cadastro de portais (ComprasNet, Licitações-e, BLL, etc.)
-- Controle de credenciais
-- Alertas de vencimento de acesso
-- Dashboard de status (ativos, vencidos, pendentes)
-- Cálculo automático de dias até vencimento
-
-#### 7. **Gestão de Contratos e Empenhos** 🆕
-- Cadastro de contratos
+#### ✅ Gestão de Contratos
+- Formulário completo com cláusulas de multa
+- Simulador de penalidades
+- Alertas de vencimento
+- Garantia contratual
 - Controle de vigência
-- Dashboard financeiro
-- Alertas de vencimento (90 dias)
-- Módulo de empenhos (em desenvolvimento)
 
-#### 8. **Gestão de Documentos**
-- Categorização (atestado, CREA/CAU, certidão, licença)
-- Controle de validade
-- Upload e armazenamento
-
-#### 9. **Calendário e Tarefas**
-- Tipos: task, meeting, deadline
-- Prioridades: high, medium, low
-- Vinculação com editais
-
-#### 10. **Sistema de Notificações**
-- Tipos: deadline, status_change, new_edital, system, task, document
-- Centro de notificações
-
-#### 11. **Gestão de Usuários**
-- Roles: admin, gestor, analista, cliente
-- Controle de acesso via AuthGuard
-- Logs de atividade
-
-#### 12. **Multi-tenancy**
-- Segregação de dados por organização
-- Suporte a múltiplas empresas
+#### ✅ Módulos Completos
+- 📄 Editais
+- 📊 Dashboard
+- 📝 Contratos
+- 📅 Calendário
+- 📁 Documentos (Vault)
+- 🏢 Fornecedores
+- 💰 Cotações
+- 🌐 Portais de Licitação
+- 👥 Usuários e Permissões
+- ⚙️ Configurações
 
 ---
 
 ## 🛠️ Stack Tecnológica
 
-### **Frontend**
-- **React 18.3.1** com **TypeScript 5.5.3**
-- **Vite 5.4.2** (build tool)
-- **TailwindCSS 3.4.1** (estilização)
-- **Lucide React 0.344.0** (ícones)
+### Frontend
+- **React 18** - Biblioteca UI
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool
+- **TailwindCSS** - Estilização
+- **Lucide React** - Ícones
 
-### **Backend/Database**
-- **Supabase** (PostgreSQL + Auth + Storage)
-- **@supabase/supabase-js 2.58.0**
+### Backend
+- **Supabase** - BaaS completo
+  - PostgreSQL (Banco de dados)
+  - Auth (Autenticação)
+  - Storage (Armazenamento)
+  - Realtime (Tempo real)
 
-### **Design System**
-- **Paleta de Cores:**
-  - Petrol (#0F4C5C) - Azul petróleo base
-  - Cyan (#39A2DB) - Azul ciano inovação
-  - Tech Green (#2AA876) - Verde tecnológico
-  - Graphite (#2B2F36) - Grafite profundo
-  - Silver (#C7D2D6) - Cinza-prata
+### Arquitetura
+- **Atomic Design** - Organização de componentes
+- **Vertical Slices** - Módulos independentes
+- **Clean Code** - Boas práticas
 
 ---
 
-## 📦 Instalação e Configuração
+## 🚀 Como Executar
 
-### **Pré-requisitos**
-- Node.js 18+ 
-- npm ou yarn
-- Conta Supabase (para produção)
-
-### **1. Clone o repositório**
+### Pré-requisitos
 ```bash
-cd project-bolt-sb1-svqzfblf/project
+Node.js 18+
+npm ou pnpm
+Conta no Supabase
 ```
 
-### **2. Instale as dependências**
+### Instalação
 ```bash
+# Clone o repositório
+git clone https://github.com/pedrohenriquecarvalho2025-spec/licitmind-crm.git
+
+# Entre no diretório
+cd licitmind-crm/project-bolt-sb1-svqzfblf/project
+
+# Instale as dependências
 npm install
 ```
 
-### **3. Configure as variáveis de ambiente**
+### Configuração
+Crie um arquivo `.env` na raiz do projeto:
 
-Copie o arquivo `.env.example` para `.env`:
-```bash
-cp .env.example .env
-```
-
-Edite o arquivo `.env` com suas credenciais:
 ```env
-# Supabase Configuration
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Application Mode
-VITE_DEMO_MODE=false  # true para modo demo, false para produção
+VITE_SUPABASE_URL=sua_url_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima
 ```
 
-### **4. Configure o Supabase**
-
-#### **4.1. Crie um projeto no Supabase**
-1. Acesse [supabase.com](https://supabase.com)
-2. Crie um novo projeto
-3. Copie a URL e a chave anônima
-
-#### **4.2. Execute as migrações**
-Execute os arquivos SQL na ordem:
-1. `supabase/migrations/20250925182552_square_wildflower.sql`
-2. `supabase/migrations/20251002161434_add_documents_calendar_notifications.sql`
-3. `supabase/migrations/20251022130000_add_suppliers_quotations.sql`
-4. `supabase/migrations/20251022130100_add_bidding_portals.sql`
-5. `supabase/migrations/20251022130200_add_contracts_commitments.sql`
-
-Você pode executar via:
-- Supabase Dashboard > SQL Editor
-- Supabase CLI: `supabase db push`
-
-### **5. Inicie o servidor de desenvolvimento**
+### Executar em Desenvolvimento
 ```bash
 npm run dev
 ```
 
-Acesse: `http://localhost:5173`
+A aplicação estará disponível em `http://localhost:5173`
+
+### Build para Produção
+```bash
+npm run build
+```
 
 ---
 
-## 🗄️ Estrutura do Banco de Dados
+## 📁 Estrutura do Projeto
 
-### **Tabelas Principais**
-
-1. **organizations** - Organizações/empresas
-2. **user_profiles** - Perfis de usuários
-3. **editals** - Editais de licitação
-4. **suppliers** 🆕 - Fornecedores
-5. **quotations** 🆕 - Cotações
-6. **quotation_items** 🆕 - Itens de cotação
-7. **quotation_responses** 🆕 - Respostas de fornecedores
-8. **bidding_portals** 🆕 - Portais de licitação
-9. **portal_access_history** 🆕 - Histórico de acessos
-10. **contracts** 🆕 - Contratos
-11. **contract_amendments** 🆕 - Aditivos
-12. **commitments** 🆕 - Empenhos
-13. **contract_measurements** 🆕 - Medições
-14. **revenue_forecast** 🆕 - Previsão de receitas
-15. **documents** - Documentos
-16. **calendar_tasks** - Tarefas
-17. **notifications** - Notificações
-18. **pipelines** - Pipelines
-19. **pipeline_stages** - Estágios
-20. **comments** - Comentários
-21. **activity_logs** - Logs de auditoria
+```
+src/
+├── components/          # Componentes UI
+│   ├── ui/
+│   │   ├── atoms/      # Componentes básicos
+│   │   ├── molecules/  # Componentes compostos
+│   │   └── organisms/  # Componentes complexos
+│   ├── auth/           # Componentes de autenticação
+│   └── layout/         # Layout e navegação
+│
+├── modules/            # Módulos verticais
+│   ├── dashboard/      # Dashboard
+│   ├── editals/        # Gestão de editais
+│   ├── contracts/      # Gestão de contratos
+│   ├── calendar/       # Calendário e tarefas
+│   ├── documents/      # Vault de documentos
+│   ├── suppliers/      # Fornecedores
+│   ├── quotations/     # Cotações
+│   ├── portals/        # Portais de licitação
+│   ├── users/          # Usuários
+│   └── settings/       # Configurações
+│
+├── core/               # Núcleo da aplicação
+│   ├── config/         # Configurações
+│   ├── services/       # Serviços globais
+│   └── utils/          # Utilitários
+│
+├── hooks/              # Custom React Hooks
+├── contexts/           # React Contexts
+├── types/              # Definições de tipos
+└── lib/                # Bibliotecas e integrações
+```
 
 ---
 
-## 🎯 Roadmap de Desenvolvimento
+## 🗄️ Banco de Dados
 
-### **FASE 1 - Fundação** ✅ (Concluída)
-- ✅ Configurar Supabase real
-- ✅ Criar módulo de Fornecedores e Cotações
-- ✅ Criar Portal de Gestão de Portais
-- ✅ Criar módulo de Contratos e Empenhos
+### Tabelas Principais
+- `organizations` - Organizações/Empresas
+- `user_profiles` - Perfis de usuário
+- `editals` - Editais de licitação
+- `edital_items` - Itens dos editais
+- `contracts` - Contratos
+- `contract_penalties` - Cláusulas de multa
+- `documents` - Documentos (vault)
+- `bidding_portals` - Portais de licitação
+- `suppliers` - Fornecedores
+- `quotations` - Cotações
+- `calendar_events` - Eventos do calendário
+- `tasks` - Tarefas
+- `activity_logs` - Logs de auditoria
 
-### **FASE 2 - UX e Funcionalidades Core** 🔄 (Em Progresso)
-- ⏳ Implementar drag-and-drop no Pipeline
-- ⏳ Desenvolver OCR para editais
-- ⏳ Aprimorar Dashboard com métricas de analistas
-- ⏳ Sistema de notificações em tempo real
+### Migrations
+Todas as migrations estão em `supabase/migrations/`
 
-### **FASE 3 - Inteligência** 📋 (Planejado)
-- 📋 Análise de Editais com IA
-- 📋 Relatórios Avançados e BI
-- 📋 Recomendações inteligentes
-- 📋 Pontuação de risco
-
-### **FASE 4 - Integrações** 📋 (Planejado)
-- 📋 API REST completa
-- 📋 Integração Google Calendar
-- 📋 Integração WhatsApp
-- 📋 Integração Email (SMTP)
-- 📋 Webhooks
-
-### **FASE 5 - Customização** 📋 (Planejado)
-- 📋 Campos customizados por segmento
-- 📋 Templates reutilizáveis
-- 📋 White-label
+Execute no Supabase SQL Editor:
+```sql
+-- Executar em ordem:
+-- 1. 20250925182552_square_wildflower.sql
+-- 2. 20251002161434_add_documents_calendar_notifications.sql
+-- 3. 20251022130000_add_suppliers_quotations.sql
+-- 4. 20251022130100_add_bidding_portals.sql
+-- 5. 20251022130200_add_contracts_commitments.sql
+-- 6. 20251022130300_add_pipelines_google_drive.sql
+```
 
 ---
 
 ## 🔐 Autenticação e Permissões
 
-### **Roles Disponíveis**
+### Níveis de Acesso
 - **Admin** - Acesso total
-- **Gestor** - Gestão de equipe e editais
-- **Analista** - Operação de editais
-- **Cliente** - Visualização limitada
+- **Manager** - Gestão de módulos
+- **Viewer** - Apenas visualização
 
-### **Modo Demo**
-O sistema possui um modo demonstração que permite testar sem configurar o Supabase:
-- Defina `VITE_DEMO_MODE=true` no `.env`
-- Use qualquer email/senha para login
-- Dados mockados pré-carregados
+### Permissões por Módulo
+Cada módulo possui controle granular de permissões:
+- `view` - Visualizar
+- `create` - Criar
+- `edit` - Editar
+- `delete` - Excluir
 
 ---
 
-## 📝 Scripts Disponíveis
+## 🎨 Design System
 
+### Cores Principais
+```css
+Brand Cyan: #39A2DB
+Brand Blue: #0066CC
+Tech Green: #2ECC71
+Tech Orange: #E67E22
+Tech Purple: #9B59B6
+```
+
+### Temas
+- **Light Mode** - Tema claro
+- **Dark Mode** - Tema escuro
+
+### Componentes
+Todos os componentes seguem o padrão **Atomic Design**:
+- **Atoms** - Botões, inputs, badges, etc.
+- **Molecules** - Cards, forms, dropdowns, etc.
+- **Organisms** - Tabelas, modais, sidebars, etc.
+
+---
+
+## 📚 Documentação
+
+Documentação completa disponível em `/docs`:
+
+- `ARCHITECTURE.md` - Arquitetura do sistema
+- `COMPONENT_QUICK_REFERENCE.md` - Referência de componentes
+- `MODULE_IMPLEMENTATION_GUIDE.md` - Guia de implementação
+- `PROGRESSO_FINAL_DESENVOLVIMENTO.md` - Status do desenvolvimento
+
+---
+
+## 🧪 Testes
+
+### Executar Testes
 ```bash
-npm run dev          # Inicia servidor de desenvolvimento
-npm run build        # Build para produção
-npm run preview      # Preview do build
-npm run lint         # Executa linter
+npm run test
+```
+
+### Coverage
+```bash
+npm run test:coverage
+```
+
+---
+
+## 📦 Deploy
+
+### Opções de Deploy
+- **Vercel** (Recomendado)
+- **Netlify**
+- **AWS Amplify**
+- **Railway**
+
+### Deploy com Vercel
+```bash
+npm install -g vercel
+vercel
 ```
 
 ---
@@ -264,24 +278,57 @@ npm run lint         # Executa linter
 
 ---
 
+## 📝 Roadmap
+
+### ✅ Concluído
+- [x] Dashboard completo
+- [x] Gestão de Editais
+- [x] Gestão de Contratos
+- [x] Sistema de permissões
+- [x] Integração Google Drive (base)
+- [x] Busca de CNPJ
+
+### 🔄 Em Desenvolvimento
+- [ ] Drag-and-Drop no Pipeline
+- [ ] Monitor de Validade (Documentos)
+- [ ] Sistema de Notificações em tempo real
+- [ ] Interface de comparação de Cotações
+
+### 📋 Planejado
+- [ ] API Pública REST
+- [ ] Mobile App (React Native)
+- [ ] OCR de documentos
+- [ ] Análise com Machine Learning
+- [ ] Integrações avançadas (Slack, Teams)
+
+---
+
+## 👨‍💻 Autor
+
+**Equipe LicitMind**
+
+---
+
 ## 📄 Licença
 
-Este projeto é proprietário e confidencial.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-## 📞 Suporte
+## 💬 Suporte
 
-Para suporte, entre em contato através de: suporte@licitmind.com.br
-
----
-
-## 🎨 Créditos
-
-**Logo:** Manta Ray com Cérebro em tons de azul - simbolizando inteligência, fluidez e adaptabilidade.
-
-**Design System:** Inspirado em interfaces modernas de SaaS com foco em produtividade.
+- **Email**: suporte@licitmind.com.br
+- **Documentação**: [/docs](./docs)
+- **Issues**: [GitHub Issues](https://github.com/pedrohenriquecarvalho2025-spec/licitmind-crm/issues)
 
 ---
 
-**Desenvolvido com ❤️ para revolucionar a gestão de licitações no Brasil**
+## ⭐ Star o Projeto
+
+Se este projeto foi útil para você, considere dar uma estrela ⭐
+
+---
+
+**Desenvolvido com ❤️ pela equipe LicitMind**  
+**Versão**: 1.0.0-beta  
+**Última atualização**: Outubro 2025

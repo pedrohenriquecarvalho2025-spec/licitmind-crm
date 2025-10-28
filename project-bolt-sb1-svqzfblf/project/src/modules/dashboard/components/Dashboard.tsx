@@ -6,6 +6,7 @@ import { QuickLinks } from './QuickLinks'
 import { RecentActivity } from './RecentActivity'
 import { ExpirationAlerts } from './ExpirationAlerts'
 import { BiddingSchedule } from './BiddingSchedule'
+import { PenaltySimulator } from './PenaltySimulator'
 
 export function Dashboard() {
   const { profile } = useAuth()
@@ -62,6 +63,9 @@ export function Dashboard() {
         <div className="space-y-6">
           {/* Agenda de Disputas */}
           <BiddingSchedule />
+          
+          {/* Simulador de Multas */}
+          <PenaltySimulator />
           
           {/* Botões de Acesso Rápido */}
           <QuickLinks />
